@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bitenow-backend
+    ports:
+      - "8000:8000"
+    # Mount local code so Python changes reflect immediately (hot-reload)
+    volumes:
+      - ./backend:/app
+    env_file:
+      - .env
+    networks:
+      - bitenow_network
+    restart: unless-stopped
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bitenow-frontend
+    ports:
+      - "3000:80" # Nginx serves internally on 80, mapped to 3000 on Host
+    # Mount local source code so Vite/React changes reflect without rebuilding
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # Prevents host OS node_modules from overwriting container's
+    environment:
+      - VITE_API_URL=http://backend:8000 # Inter-container communication
+    env_file:
+      - .env
+    depends_on:
+      - backend
+    networks:
+      - bitenow_network
+    restart: unless-stopped
+networks:
+  bitenow_network:
+    driver: bridge

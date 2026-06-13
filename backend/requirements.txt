@@ -1,0 +1,20 @@
+# API Framework & Server
+fastapi>=0.111.0
+uvicorn[standard]>=0.30.1
+python-multipart>=0.0.9
+
+# Configuration & Env Vars
+pydantic>=2.7.4
+pydantic-settings>=2.3.4
+python-dotenv>=1.0.1
+
+# Database & Auth (Supabase)
+supabase>=2.5.0
+
+# Payments
+razorpay>=1.4.1
+
+# Staff Authentication & Security
+PyJWT>=2.8.0
+bcrypt>=4.1.3
+passlib[bcrypt]>=1.7.4
