@@ -11,9 +11,81 @@ const GENERATION_TEXTS = [
     "Generating surprises..."
 ];
 
+const POPULAR_PICKS = [
+    { emoji: '🍕', label: 'Pizza', price: 'From ₹149' },
+    { emoji: '🍔', label: 'Burger', price: 'From ₹99' },
+    { emoji: '🥤', label: 'Cold Coffee', price: 'From ₹79' },
+    { emoji: '🥗', label: 'Healthy Bowl', price: 'From ₹199' },
+    { emoji: '🌮', label: 'Wrap', price: 'From ₹129' },
+    { emoji: '🍟', label: 'Fries', price: 'From ₹89' },
+];
+
+const BackgroundParticles = () => {
+    const particles = Array.from({ length: 15 });
+    return (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+            {particles.map((_, i) => (
+                <motion.div
+                    key={i}
+                    className="absolute bg-primary/30 rounded-full blur-[1px]"
+                    style={{
+                        width: Math.random() * 6 + 2 + 'px',
+                        height: Math.random() * 6 + 2 + 'px',
+                        left: Math.random() * 100 + '%',
+                        top: Math.random() * 100 + '%',
+                    }}
+                    animate={{
+                        y: [0, -100 - Math.random() * 100],
+                        opacity: [0, 0.8, 0],
+                    }}
+                    transition={{
+                        duration: Math.random() * 10 + 10,
+                        repeat: Infinity,
+                        ease: "linear",
+                        delay: Math.random() * 10,
+                    }}
+                />
+            ))}
+        </div>
+    );
+};
+
+const PopularPicksCarousel = () => {
+    // Duplicate array for seamless infinite scrolling
+    const items = [...POPULAR_PICKS, ...POPULAR_PICKS];
+
+    return (
+        <div className="w-full mt-24 mb-2 z-10 flex flex-col items-center pointer-events-none">
+            <h3 className="text-white/40 font-label-sm uppercase tracking-widest mb-4">Today's Popular Picks</h3>
+            <div 
+                className="w-full overflow-hidden relative"
+                style={{ 
+                    WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
+                    maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)' 
+                }}
+            >
+                <motion.div 
+                    className="flex w-max"
+                    animate={{ x: ["0%", "-50%"] }}
+                    transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+                >
+                    {items.map((item, idx) => (
+                        <div key={idx} className="flex flex-col items-center justify-center w-[110px] bg-white/5 border border-white/5 rounded-[16px] p-3 mx-2 backdrop-blur-sm">
+                            <span className="text-[32px] mb-2">{item.emoji}</span>
+                            <span className="text-white/80 font-label-md text-[13px] text-center">{item.label}</span>
+                            <span className="text-primary/70 font-label-sm text-[10px]">{item.price}</span>
+                        </div>
+                    ))}
+                </motion.div>
+            </div>
+        </div>
+    );
+};
+
+// Helper for dynamic tags removed
 const Surprise = () => {
     const navigate = useNavigate();
-    const { addItem, getTotalItems } = useCartStore();
+    const { addToCart, getTotalItems } = useCartStore();
     const totalCartItems = getTotalItems();
     
     // State
@@ -51,7 +123,7 @@ const Surprise = () => {
         if (direction === 'right') {
             // Add items to cart
             items.forEach(item => {
-                addItem(item);
+                addToCart(item, item.canteenId || 'c1');
             });
             
             // Trigger cart pop-in and pulse
@@ -72,6 +144,7 @@ const Surprise = () => {
         }
     }, [deck, flowState]);
 
+    // Helper removed
     return (
         <div className="absolute inset-0 bg-background text-on-surface flex flex-col items-center justify-center overflow-hidden pt-safe pb-[90px] perspective-[1000px]">
             {/* Header stays static */}
@@ -85,6 +158,9 @@ const Surprise = () => {
                 )}
             </div>
 
+            {/* Particles only in setup phase */}
+            {flowState === 'setup' && <BackgroundParticles />}
+
             <AnimatePresence mode="wait">
                 {/* SETUP PHASE */}
                 {flowState === 'setup' && (
@@ -93,38 +169,42 @@ const Surprise = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -40, scale: 0.95 }}
-                        className="w-full px-6 flex flex-col items-center mt-20"
+                        className="w-full flex flex-col items-center h-full pt-10 px-6 justify-center"
                     >
-                        <div className="bg-surface-container-low border border-white/5 rounded-[24px] p-8 w-full shadow-2xl flex flex-col items-center relative overflow-hidden">
-                            {/* Subtle background gradient inside card */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-50 pointer-events-none"></div>
+                        {/* 1. Live Carousel */}
+                        <PopularPicksCarousel />
 
-                            <h2 className="text-white/80 font-headline-md mb-8 z-10">What's your budget today?</h2>
-                            
-                            <div className="relative flex items-center justify-center mb-8 z-10 group">
-                                <span className="absolute left-6 text-primary text-[40px] font-headline-xl font-bold opacity-80 pointer-events-none">₹</span>
-                                <input 
-                                    type="number" 
-                                    value={budget}
-                                    onChange={(e) => setBudget(Number(e.target.value))}
-                                    className="w-full max-w-[200px] bg-surface-bright/50 border-2 border-white/10 rounded-[20px] text-center text-[56px] font-headline-xl text-primary glow-effect py-2 pl-8 outline-none focus:border-primary/50 focus:bg-surface-bright transition-all"
-                                    min="50"
-                                    max="2000"
-                                />
-                            </div>
-                            
-                            <div className="flex gap-2 justify-center flex-wrap mb-8">
-                                <span className="bg-surface-bright text-white/70 px-3 py-1 rounded-full font-label-sm text-[11px]">✓ Snack Combo</span>
-                                <span className={`px-3 py-1 rounded-full font-label-sm text-[11px] transition-colors ${budget >= 120 ? 'bg-surface-bright text-white/70' : 'bg-transparent text-white/20 border border-white/10'}`}>✓ Quick Meal</span>
-                                <span className={`px-3 py-1 rounded-full font-label-sm text-[11px] transition-colors ${budget >= 250 ? 'bg-surface-bright text-white/70' : 'bg-transparent text-white/20 border border-white/10'}`}>✓ Full Meal</span>
+                        {/* 2. Sleek Budget Form */}
+                        <div className="w-full max-w-md mx-auto flex flex-col items-center justify-center mt-10 text-center z-10">
+                            <h2 className="text-white font-headline-md mb-2 text-[28px] font-bold tracking-tight">What's your budget?</h2>
+                            <p className="text-white/40 font-body-sm mb-12">We'll find the perfect meal for you</p>
+
+                            <div className="w-full text-left mb-6">
+                                <label className="text-white/30 font-label-sm uppercase tracking-widest text-[10px] mb-2 block">Enter your budget</label>
+                                <div className="h-[1px] w-full bg-gradient-to-r from-white/20 to-transparent mb-4"></div>
+                                
+                                <div className="bg-[#1a1a1a] rounded-[12px] p-4 flex items-center border border-white/5 shadow-inner transition-colors focus-within:bg-[#222]">
+                                    <span className="text-white/40 font-headline-sm mr-2 ml-2">₹</span>
+                                    <input 
+                                        type="number"
+                                        placeholder="e.g. 150"
+                                        className="bg-transparent border-none outline-none text-white font-headline-sm w-full placeholder:text-white/20 pl-2"
+                                        value={budget || ""}
+                                        onChange={(e) => setBudget(Number(e.target.value))}
+                                        min="50"
+                                        max="2000"
+                                    />
+                                </div>
                             </div>
 
                             <button 
                                 onClick={handleSurpriseMe}
-                                className="w-full bg-primary-container text-on-primary-container py-4 rounded-[16px] font-headline-md text-[18px] glow-effect active:scale-95 transition-transform z-10"
+                                className="w-full bg-[#f96b24] text-white font-label-md text-[16px] py-4 rounded-[12px] flex items-center justify-center shadow-[0_0_30px_rgba(249,107,36,0.3)] active:scale-95 transition-all hover:bg-[#ff7b38]"
                             >
-                                Surprise Me
+                                <span className="mr-2">✨</span> SURPRISE ME <span className="ml-2 font-bold text-[20px]">→</span>
                             </button>
+
+                            <p className="text-white/30 font-body-sm text-[11px] mt-6">We'll pick a random delicious meal within your range</p>
                         </div>
                     </motion.div>
                 )}
@@ -363,6 +443,9 @@ const SwipeableCard = ({ card, isTop, index, onSwipe, swipeDirection }) => {
     const rotate = useTransform(x, [-200, 200], [-15, 15]);
     const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0.5, 1, 1, 1, 0.5]);
     
+    const yumOpacity = useTransform(x, [50, 100], [0, 1]);
+    const nopeOpacity = useTransform(x, [-50, -100], [0, 1]);
+
     // Tap to Reveal State
     const [isFlipped, setIsFlipped] = useState(false);
 
@@ -392,7 +475,7 @@ const SwipeableCard = ({ card, isTop, index, onSwipe, swipeDirection }) => {
 
     return (
         <motion.div
-            className="absolute w-[300px] h-[400px] perspective-[1000px] cursor-pointer"
+            className="absolute w-[300px] h-[400px] perspective-[1000px]"
             style={{ 
                 zIndex: 10 - index,
                 x: isTop ? x : 0,
@@ -408,10 +491,10 @@ const SwipeableCard = ({ card, isTop, index, onSwipe, swipeDirection }) => {
             dragElastic={0.6}
             onDragEnd={handleDragEnd}
             whileDrag={isFlipped ? { cursor: "grabbing" } : {}}
-            onClick={handleTap}
+            onTap={handleTap}
         >
             <motion.div 
-                className="w-full h-full relative preserve-3d transition-transform duration-700 shadow-2xl rounded-[24px]"
+                className="w-full h-full relative transition-transform duration-700 shadow-2xl rounded-[24px] cursor-pointer"
                 animate={{ rotateY: isFlipped ? 180 : 0 }}
                 style={{ transformStyle: 'preserve-3d' }}
             >
@@ -463,13 +546,13 @@ const SwipeableCard = ({ card, isTop, index, onSwipe, swipeDirection }) => {
                         <>
                             <motion.div 
                                 className="absolute top-8 right-8 border-4 border-[#71d7cd] rounded-md px-2 py-1 text-[#71d7cd] font-bold text-2xl rotate-[15deg] pointer-events-none"
-                                style={{ opacity: useTransform(x, [50, 100], [0, 1]) }}
+                                style={{ opacity: yumOpacity }}
                             >
                                 YUM
                             </motion.div>
                             <motion.div 
                                 className="absolute top-8 left-8 border-4 border-error rounded-md px-2 py-1 text-error font-bold text-2xl -rotate-[15deg] pointer-events-none"
-                                style={{ opacity: useTransform(x, [-50, -100], [0, 1]) }}
+                                style={{ opacity: nopeOpacity }}
                             >
                                 NOPE
                             </motion.div>
