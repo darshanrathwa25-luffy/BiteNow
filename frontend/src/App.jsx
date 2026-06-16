@@ -15,9 +15,15 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { RoleRedirect } from './components/auth/RoleRedirect';
 import { AuthProvider } from './context/AuthContext';
 
+// Vendor Pages
+import VendorDashboard from './pages/vendor/VendorDashboard';
+import VendorOrders from './pages/vendor/VendorOrders';
+import VendorProducts from './pages/vendor/VendorProducts';
+import VendorEarnings from './pages/vendor/VendorEarnings';
+import VendorStaff from './pages/vendor/VendorStaff';
+
 // Dummy components for missing dashboards to satisfy router
 const StaffDashboard = () => <div className="p-8 text-white">Staff Dashboard</div>;
-const OwnerDashboard = () => <div className="p-8 text-white">Owner Dashboard</div>;
 const AdminDashboard = () => <div className="p-8 text-white">Admin Dashboard</div>;
 
 function App() {
@@ -46,8 +52,14 @@ function App() {
         {/* Protected Routes - STAFF */}
         <Route path="/staff" element={<ProtectedRoute allowedRoles={['STAFF']}><StaffDashboard /></ProtectedRoute>} />
 
-        {/* Protected Routes - OWNER */}
-        <Route path="/owner" element={<ProtectedRoute allowedRoles={['OWNER']}><OwnerDashboard /></ProtectedRoute>} />
+        {/* Protected Routes - OWNER (Vendor) */}
+        <Route element={<ProtectedRoute allowedRoles={['OWNER']}><MainLayout /></ProtectedRoute>}>
+          <Route path="/vendor/dashboard" element={<VendorDashboard />} />
+          <Route path="/vendor/orders" element={<VendorOrders />} />
+          <Route path="/vendor/products" element={<VendorProducts />} />
+          <Route path="/vendor/earnings" element={<VendorEarnings />} />
+          <Route path="/vendor/staff" element={<VendorStaff />} />
+        </Route>
 
         {/* Protected Routes - ADMIN */}
         <Route path="/admin" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboard /></ProtectedRoute>} />
