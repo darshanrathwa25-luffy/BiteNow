@@ -19,13 +19,27 @@ const SignUp = () => {
                 
                 {/* Logo (Fork and Spoon) */}
                 <div className="flex justify-center mb-8">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M11 11V19C11 19.5523 10.5523 20 10 20C9.44772 20 9 19.5523 9 19V11C9 10.4477 9 10 9 10V6.5C9 5.67157 9.67157 5 10.5 5C11.3284 5 12 5.67157 12 6.5V10C12 10 12 10.4477 11 11Z" stroke="#E89D66" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M9 7H12" stroke="#E89D66" strokeWidth="1.5" strokeLinecap="round"/>
-                        <path d="M15 13L18.5 9.5C19.3284 8.67157 19.3284 7.32843 18.5 6.5C17.6716 5.67157 16.3284 5.67157 15.5 6.5L12 10" stroke="#E89D66" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M13 19L16 16" stroke="#E89D66" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M6 6L18 18" stroke="#E89D66" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M18 6L6 18" stroke="#E89D66" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        {/* Fork (Back) */}
+                        <g transform="rotate(-45, 12, 12)">
+                            <rect x="10.5" y="9" width="3" height="12" rx="1.5" fill="#ECA473" />
+                            <path d="M 7.5 6 L 16.5 6 L 16.5 8.5 C 16.5 10.5 14.5 11.5 12 11.5 C 9.5 11.5 7.5 10.5 7.5 8.5 Z" fill="#ECA473" />
+                            <rect x="7.5" y="2" width="1.5" height="5.5" rx="0.75" fill="#ECA473" />
+                            <rect x="10" y="2" width="1.5" height="5.5" rx="0.75" fill="#ECA473" />
+                            <rect x="12.5" y="2" width="1.5" height="5.5" rx="0.75" fill="#ECA473" />
+                            <rect x="15" y="2" width="1.5" height="5.5" rx="0.75" fill="#ECA473" />
+                        </g>
+
+                        {/* Spoon (Front) */}
+                        <g transform="rotate(45, 12, 12)">
+                            <path 
+                                d="M12,1 C15,1 16,3 16,6 C16,9 14.5,10.5 13.5,11 L13.5,21 C13.5,21.8 12.8,22.5 12,22.5 C11.2,22.5 10.5,21.8 10.5,21 L10.5,11 C9.5,10.5 8,9 8,6 C8,3 9,1 12,1 Z" 
+                                fill="#ECA473" 
+                                stroke="#1A1A1A" 
+                                strokeWidth="1.5" 
+                                strokeLinejoin="round" 
+                            />
+                        </g>
                     </svg>
                 </div>
                 

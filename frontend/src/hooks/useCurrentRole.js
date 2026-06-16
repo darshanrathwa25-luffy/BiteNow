@@ -6,8 +6,8 @@ export function useCurrentRole() {
   if (!isLoaded) return { role: null, isLoaded, isSignedIn };
   if (!isSignedIn) return { role: null, isLoaded, isSignedIn };
 
-  // Extract role from public metadata
-  const role = user?.publicMetadata?.role || null;
+  // Extract role from public metadata, default to STUDENT
+  const role = user?.publicMetadata?.role || "STUDENT";
   
   return { role, isLoaded, isSignedIn };
 }
